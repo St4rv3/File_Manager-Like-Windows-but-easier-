@@ -1,74 +1,148 @@
-# Stable Virtual Task Manager v4.1
+# STABLE TASK MANAGER v5.0
 
-A console-based system monitor and process manager with a color interface based on `prompt_toolkit`. It works without ANSI clutter, is error-resistant, and supports logging to SQLite.
+A console-based system monitor and process manager with a color interface. Supports two modes: full UI (prompt_toolkit) and terminal mode.
 
-![Demo](demo.gif) *(if there is a gif, replace the link)*
+![Demo](demo.gif)
 
 ## 📦 Features
 
-- 🖥 **Process monitoring** – sorting by PID, name, CPU, memory, filtering by name
-- 📊 **System resources** – CPU and RAM progress bars, disk and network usage
-- 🌐 **Network connections** – list of listening TCP ports
-- 📝 **Metric logging** – saving CPU, MEM, disk, and traffic to SQLite
-- 🎮 **Full keyboard control** – hotkeys for navigation and actions
-- 🚫No ANSI garbage** – clean output through native `prompt_toolkit` styles (does not require Rich)
-- 💪 **Stability** – correct operation with regular user rights, database migration during updates, and error handling
-## 🗝️ Hotkeys
+### System Monitoring
+- 📊 **Real-time metrics** — CPU, RAM, disk, network
+- 📈 **CPU history chart** — visual ASCII graph
+- 💾 **Memory details** — used/available in GB
+- ⏱ **Uptime** — system running time
+- 🔢 **CPU info** — number of cores
+
+### Process Management
+- 🔍 **Search** — filter processes by name
+- 🎯 **Sort** — by CPU, memory, name, PID
+- ⬆️⬇️ **Scroll** — page through all processes
+- ❌ **Kill** — terminate processes by PID
+
+### Data & Export
+- 💾 **Logging** — metrics to SQLite
+- 📤 **CSV export** — export logs
+- 🧹 **Cleanup** — delete old records
+- ⚙️ **Config** — settings in config.json
+
+## 📁 Files
+
+| File | Description |
+|------|-------------|
+| `main.py` | Main version (full UI, requires Windows Terminal) |
+| `main_terminal.py` | Terminal version with hotkeys |
+| `main_input.py` | Input-based version (compatible) |
+
+## 🖥️ Requirements
+
+- Python 3.8+
+- psutil
+- prompt_toolkit (for main.py)
+
+## ⚡️ Installation
+
+```bash
+pip install psutil prompt_toolkit
+```
+
+## 🚀 Usage
+
+### Option 1: main_input.py (recommended for VS Code)
+```bash
+python main_input.py
+```
+
+Commands:
+- `/text` — search (e.g., `/python`)
+- `k PID` — kill (e.g., `k 15372`)
+- `number` — kill by PID
+- `w` — page up
+- `s` — page down
+- `r` — reset filter
+- `q` — quit
+
+### Option 2: main_terminal.py (for Windows Terminal / cmd)
+```bash
+python main_terminal.py
+```
+
+Hotkeys:
+- `/` — search mode
+- `k` — kill mode
+- `w/s` — scroll
+- `r` — reset
+- `q` — quit
+- `ESC` — cancel
+
+### Option 3: main.py (full UI)
+```bash
+python main.py
+```
+Requires Windows Terminal or cmd.exe with full-screen support.
+
+## ⌨️ Controls (main.py)
 
 | Key | Action |
-|--------------|------------------------------------------|
-| `←` / `→`| Page navigation (PROCESSES → SYSTEM → NETWORK → LOGS → HELP) |
-| `/` | Process name filter (enter a string) |
-| `r` | Filter reset |
-| `s` | Change the sorting: CPU → MEM → NAME → PID |
-| `k` | Kill a process by PID |
-| `F1` | Show help |
-| `q` | Exit the program |
-## 📋 Monitoring pages
+|-----|--------|
+| `←`/`→` | Switch pages |
+| `/` | Filter by name |
+| `N` | Filter by PID |
+| `r` | Reset filter |
+| `s` | Change sort |
+| `Space` | Sort direction |
+| `k` | Kill process |
+| `K` | Kill process tree |
+| `F1` | Help |
+| `q` | Quit |
+
+## 📊 Pages
 
 ### PROCESSES
-- List of running processes (PID, name, CPU%, MEM%, status)
-- Color indicators: 🟢 green (low load), 🟡 yellow (medium), 🔴 red (high)
-- Filtering support: enter `/python` to see only Python processes
-- Sort by any column
+Process list with PID, name, CPU%, MEM%, DISK I/O
 
 ### SYSTEM
-- CPU and RAM progress bars
-- Current disk usage as a percentage
-- Amount of data transferred/received over the network (in KB)
+- CPU, RAM, DISK progress bars
+- CPU history graph
+- Uptime, CPU cores
+- Network (↑/↓)
 
 ### NETWORK
-- Output of TCP connections in the LISTEN state (local address and PID)
-- May require administrator privileges to display all processes correctly
+- TCP/UDP connections
+- Port filter
 
 ### LOGS
-- Last 10 entries from the `metrics.db` database
-- Timestamps, CPU, MEM with color indicators
+Metrics history from DB
 
 ### HELP
-- Built-in help for managing
-## 🗃️ Database
+Help page
 
-The program automatically creates (or migrates) the `metrics.db` file in the current directory. 
-The structure of the `system_metrics` table is as follows:
+## 🗄️ Database
 
-| Field | Type | Description |
-|---------------|---------|-------------------------------------------|
-| id | INTEGER | Primary key |
-| timestamp | TEXT | ISO date/time of the record |
-| cpu | REAL | CPU load as a percentage |
-| memory | REAL | RAM usage as a percentage |
-| disk_percent | REAL | Disk load as a percentage (added during migration) |
-| net_sent | INTEGER | Sent bytes (added during migration) |
-| net_recv | INTEGER | Received bytes (added during migration) |
-When the program is first launched, a table is created with basic fields, and missing columns are added automatically when the program is updated.
+Auto-creates `metrics.db`:
 
-## ⚙️ Installation and launch
+| Field | Type |
+|-------|------|
+| id | INTEGER |
+| timestamp | TEXT |
+| cpu | REAL |
+| memory | REAL |
+| disk_percent | REAL |
+| net_sent | INTEGER |
+| net_recv | INTEGER |
 
-### Requirements
-- Python 3.8 or higher
-- Installed packages: `psutil`, `prompt-toolkit`
+## ⚙️ Configuration
 
-### Installing dependencies
-```bash
-pip install psutil prompt-toolkit
+Creates `config.json`:
+
+```json
+{
+  "refresh_interval": 1,
+  "max_procs": 100,
+  "history_size": 60,
+  "log_retention_days": 7
+}
+```
+
+## 📝 License
+
+MIT License
